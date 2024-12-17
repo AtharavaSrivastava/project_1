@@ -1,7 +1,8 @@
 
 #Line 383, how to display the availabe record?
-
-#Importing required libraries
+#thuis is new
+#Importing required librarie
+import random 
 import tkinter as tk
 from tkinter import StringVar
 from tkinter import messagebox
