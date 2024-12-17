@@ -250,7 +250,7 @@ def update(event=None):
         nametk=tk.Tk()
         nametk.geometry('750x380')
         nametk.configure(bg='#42c8f5')
-        nametk.title('Update Record')
+        nametk.title('Updating Record using name')
         
         #Creating labels 
         lab0=tk.Label(nametk,text='Update Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
@@ -334,7 +334,7 @@ def update(event=None):
         idtk=tk.Tk()
         idtk.geometry('950x380')
         idtk.configure(bg='#42c8f5')
-        idtk.title('Update Record')
+        idtk.title('Updating Record using IMDB ID')
         
         #Creating labels 
         lab0=tk.Label(idtk,text='Update Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
@@ -423,106 +423,284 @@ def update(event=None):
 #Function for deleting a record 
 def delete():
     root.destroy()
-    deletetk=tk.Tk()        
-    deletetk.geometry('850x120')
+    deletetk=tk.Tk()
+    deletetk.geometry('1000x100')
     deletetk.configure(bg='#42c8f5')
     deletetk.title('Delete Record')
 
-    #Creating labels 
-    lab0=tk.Label(deletetk,text="Delete Record",font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
-    lab1=tk.Label(deletetk,text="Enter the Movie name whose data you want to delete:",font=('Cascadia Mono SemiLight',14),bg='#42c8f5')
-    
-    #Placing the labels
+    lab0=tk.Label(deletetk,text='Delete Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
+    lab1=tk.Label(deletetk,text='Enter 1 to use movie name or 2 to use IMDB ID to delete the data:',font=('Cascadia Mono SemiLight',14),bg='#42c8f5')
+
     lab0.pack()
-    lab1.place(x=20,y=40)
+    lab1.place(x=10,y=50)
 
-    #Initialising variable to read entry box
-    de=StringVar()
+    dumb=StringVar()
+    en1=tk.Entry(deletetk,textvariable=dumb,font=('Cascadia Mono SemiLight',14))
+    en1.place(x=730,y=53)
 
-    #Creating the entry box
-    en1=tk.Entry(deletetk,textvariable=de,font=('Cascadia Mono SemiLight',14))
-
-    #Placing the entry box
-    en1.place(x=585,y=40)
     
-    #Quries for deleting data in MySQL table)
-    def deleteit(event=None):
-        dele=de.get()
-        c=sq.connect(host="localhost",user="root",passwd="root",database="movie_database")
-        cursor=c.cursor()
-        sql="DELETE FROM Movies WHERE Movie_Name like '%{}%'".format(dele)
-        cursor.execute(sql)
-        c.commit()
-        lab2=tk.Label(deletetk,text="Record Deleted",font=('Cascadia Mono SemiLight',15,'bold'),bg='#42c8f5')
-        lab2.place(x=320,y=80)
-        de.set('')
-
-    deletetk.bind_all('<Return>', deleteit)
-
-    #Function to ask confirmation from user for quiting
     def on_closing():
-        if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
-            deletetk.destroy() # Closing this window
-            recreate_root() # Re-opening root window
-        else:
-            pass
-        
+            if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
+                nonlocal deletetk
+                deletetk.destroy()
+                recreate_root() # Re-opening root window
+            else:
+                pass
     deletetk.protocol('WM_DELETE_WINDOW',on_closing)
+
+    def deleteit(event=None):
+        char=dumb.get()
+        while char!='':
+            if char=='1':
+                deletewithname()
+                break                
+            elif char=='2':
+                deletewithid()
+                break
+        
+    def deletewithname():
+        nonlocal deletetk
+        deletetk.destroy()
+        nametk=tk.Tk()
+        nametk.geometry('1060x110')
+        nametk.configure(bg='#42c8f5')
+        nametk.title('Deleting Record using name')
+        
+        #Creating labels 
+        lab0=tk.Label(nametk,text='Delete Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
+        lab1=tk.Label(nametk,text='Enter the name of the movie whose data you want to delete: ',font=('Cascadia Mono SemiLight',18),bg='#42c8f5')
+
+        #Placing the labels
+        lab0.pack()
+        lab1.place(x=10,y=50)
+        
+        #Initialising variable to read entry box
+        de=StringVar()
+
+        #Creating the entry boxes
+        en1=tk.Entry(nametk,textvariable=de,font=('Cascadia Mono SemiLight',14)) 
+
+
+        #Placing the entry boxes
+        en1.place(x=825,y=59)
+               
+        #Quries for updating data in MySQL table)
+        def finallydeleting(event=None):
+            dele=de.get()
+            c=sq.connect(host="localhost",user="root",passwd="root",database="movie_database")
+            cursor=c.cursor()
+            sql="DELETE FROM Movies WHERE Movie_Name like '%{}%'".format(dele)
+            cursor.execute(sql)
+            c.commit()
+            lab2=tk.Label(nametk,text="Record Deleted",font=('Cascadia Mono SemiLight',15,'bold'),bg='#42c8f5')
+            lab2.place(x=320,y=80)
+            de.set('')
+        def on_closingname():
+            if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
+                nonlocal nametk
+                nametk.destroy()
+                recreate_root() # Re-opening root window
+            else:
+                pass 
+        nametk.bind_all('<Return>', finallydeleting)
+        nametk.protocol('WM_DELETE_WINDOW',on_closingname)
+
+    def deletewithid():
+        nonlocal deletetk
+        deletetk.destroy()
+        idtk=tk.Tk()
+        idtk.geometry('1150x110')
+        idtk.configure(bg='#42c8f5')
+        idtk.title('Deleting Record using IMDB ID')
+        
+        #Creating labels 
+        lab0=tk.Label(idtk,text='Delete Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
+        lab1=tk.Label(idtk,text='Enter the IMDB ID of the movie whose data you want to delete: ',font=('Cascadia Mono SemiLight',18),bg='#42c8f5')
+
+        #Placing the labels
+        lab0.pack()
+        lab1.place(x=10,y=50)
+        
+        #Initialising variable to read entry box
+        de=StringVar()
+
+        #Creating the entry boxes
+        en1=tk.Entry(idtk,textvariable=de,font=('Cascadia Mono SemiLight',14)) 
+
+
+        #Placing the entry boxes
+        en1.place(x=870,y=59)
+               
+        #Quries for updating data in MySQL table)
+        def finallydeleting(event=None):
+            dele=de.get()
+            c=sq.connect(host="localhost",user="root",passwd="root",database="movie_database")
+            cursor=c.cursor()
+            sql="DELETE FROM Movies WHERE IMDB_id like '%{}%'".format(dele)
+            cursor.execute(sql)
+            c.commit()
+            lab2=tk.Label(idtk,text="Record Deleted",font=('Cascadia Mono SemiLight',15,'bold'),bg='#42c8f5')
+            lab2.place(x=320,y=80)
+            de.set('')
+        def on_closingid():
+            if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
+                nonlocal idtk
+                idtk.destroy()
+                recreate_root() # Re-opening root window
+            else:
+                pass 
+        idtk.bind_all('<Return>', finallydeleting)
+        idtk.protocol('WM_DELETE_WINDOW',on_closingid)
+    deletetk.bind_all('<Return>',deleteit)
+    deleteit()
+       
     deletetk.mainloop()
+    
 
 #Function for searching a movie from the list
 def search():
     root.destroy()
     searchtk=tk.Tk()
-    searchtk.geometry('425x150')
-    searchtk.title('Search Record')
+    searchtk.geometry('1000x100')
     searchtk.configure(bg='#42c8f5')
+    searchtk.title('Search Record')
 
-    #Creating label
-    lab1=tk.Label(searchtk,text="Search Record",font=('Arial',18,'bold'),bg='#42c8f5')
-    lab2=tk.Label(searchtk,text="Movie Name:",font=('Arial',14),bg='#42c8f5')
-    #Placing the label
-    lab1.pack()
-    lab2.place(x=10,y=50)   
+    lab0=tk.Label(searchtk,text='Search Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
+    lab1=tk.Label(searchtk,text='Enter 1 to use movie name or 2 to use IMDB ID to search the data:',font=('Cascadia Mono SemiLight',14),bg='#42c8f5')
 
-    #Initialising a variable to read entry box
-    se=StringVar()
-    output=StringVar()
+    lab0.pack()
+    lab1.place(x=10,y=50)
+
+    dumb=StringVar()
+    en1=tk.Entry(searchtk,textvariable=dumb,font=('Cascadia Mono SemiLight',14))
+    en1.place(x=730,y=53)
+
     
-    #Creating entry box
-    en1=tk.Entry(searchtk,textvariable=se,font=('Arial',14))
-    en2=tk.Entry(searchtk,textvariable=output,font=('Arial',14),bg='#42c8f5',relief='flat')
-    #Placing the entry box
-    en1.place(x=130,y=50)
-    en2.place(x=100,y=90)
-    #Quries for searching data in MySQL table using movie name)
-    def searchit(event=None):
-        try:
-            pat=se.get()
-            mydb=sq.connect(host='localhost', user='root', password='root', database='movie_database')
-            cursor=mydb.cursor()
-            q="SELECT * FROM Movies WHERE Movie_Name LIKE '%{}%'".format(pat)
-            cursor.execute(q)
-            result=cursor.fetchall()
-
-            if result:
-                output.set('Record is available.')
-                ############################################################################################################################################
-            else:
-                output.set('Record is not available.')
-        except Exception as e:
-            print(f"Error: {e}")
-    searchtk.bind_all('<Return>',searchit)
-    
-    #Function to ask confirmation from user for quiting
     def on_closing():
-        if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
-            searchtk.destroy()
-            recreate_root()
-        else:
-            pass 
+            if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
+                nonlocal searchtk
+                searchtk.destroy()
+                recreate_root() # Re-opening root window
+            else:
+                pass
     searchtk.protocol('WM_DELETE_WINDOW',on_closing)
-    searchtk.mainloop()
+
+    def searchit(event=None):
+        char=dumb.get()
+        while char!='':
+            if char=='1':
+                searchwithame()
+                break                
+            elif char=='2':
+                searchwithid()
+                break
+            
+    def searchwithame():
+        nonlocal searchtk
+        searchtk.destroy()
+        nametk=tk.Tk()
+        nametk.geometry('1060x150')
+        nametk.configure(bg='#42c8f5')
+        nametk.title('Searching Record using name')
+        
+        #Creating labels 
+        lab0=tk.Label(nametk,text='Search Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
+        lab1=tk.Label(nametk,text='Enter the name of the movie whose data you want to search: ',font=('Cascadia Mono SemiLight',18),bg='#42c8f5')
+
+        #Placing the labels
+        lab0.pack()
+        lab1.place(x=10,y=50)
+        
+        #Initialising variable to read entry box
+        search=StringVar()
+        output=StringVar()
+        
+        #Creating the entry boxes
+        en1=tk.Entry(nametk,textvariable=search,font=('Cascadia Mono SemiLight',14)) 
+        en2=tk.Entry(nametk,textvariable=output,font=('Arial',14),bg='#42c8f5',relief='flat')
+
+        #Placing the entry boxes
+        en1.place(x=825,y=59)
+        en2.place(x=450,y=100)
+        def finallysearching(event=None):
+            try:
+                name=search.get()
+                mydb=sq.connect(host='localhost', user='root', password='root', database='movie_database')
+                cursor=mydb.cursor()
+                cursor.execute("SELECT * FROM Movies WHERE Movie_Name LIKE '%{}%'".format(name))
+                result=cursor.fetchall()
+
+                if result:
+                    output.set('Record is available.')
+                    ############################################################################################################################################
+                else:
+                    output.set('Record is not available.')
+            except Exception as e:
+                print(f"Error: {e}")
+
+        def on_closingname():
+            if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
+                nonlocal nametk
+                nametk.destroy()
+                recreate_root() # Re-opening root window
+            else:
+                pass 
+        nametk.bind_all('<Return>', finallysearching)
+        nametk.protocol('WM_DELETE_WINDOW',on_closingname)        
+        
+    def searchwithid():
+        nonlocal searchtk
+        searchtk.destroy()
+        idtk=tk.Tk()
+        idtk.geometry('1100x150')
+        idtk.configure(bg='#42c8f5')
+        idtk.title('Searching Record using IMDB ID')
+        
+        #Creating labels 
+        lab0=tk.Label(idtk,text='Search Record',font=('Cascadia Mono SemiLight',18,'bold'),bg='#42c8f5')
+        lab1=tk.Label(idtk,text='Enter the IMDB ID of the movie whose data you want to search: ',font=('Cascadia Mono SemiLight',18),bg='#42c8f5')
+
+        #Placing the labels
+        lab0.pack()
+        lab1.place(x=10,y=50)
+        
+        #Initialising variable to read entry box
+        search=StringVar()
+        output=StringVar()
+        
+        #Creating the entry boxes
+        en1=tk.Entry(idtk,textvariable=search,font=('Cascadia Mono SemiLight',14)) 
+        en2=tk.Entry(idtk,textvariable=output,font=('Arial',14),bg='#42c8f5',relief='flat')
+
+        #Placing the entry boxes
+        en1.place(x=870,y=59)
+        en2.place(x=500,y=100)
+        def finallysearching(event=None):
+            try:
+                name=search.get()
+                mydb=sq.connect(host='localhost', user='root', password='root', database='movie_database')
+                cursor=mydb.cursor()
+                cursor.execute("SELECT * FROM Movies WHERE IMDB_id LIKE '%{}%'".format(name))
+                result=cursor.fetchall()
+
+                if result:
+                    output.set('Record is available.')
+                    ############################################################################################################################################
+                else:
+                    output.set('Record is not available.')
+            except Exception as e:
+                print(f"Error: {e}")
+
+        def on_closingid():
+            if messagebox.askyesno(title='QUIT?',message='Are you sure you want to quit'):
+                nonlocal idtk
+                idtk.destroy()
+                recreate_root() # Re-opening root window
+            else:
+                pass 
+        idtk.bind_all('<Return>', finallysearching)
+        idtk.protocol('WM_DELETE_WINDOW',on_closingid) 
+    searchtk.bind_all('<Return>',searchit)
 
 #Function for displaying the data
 def display():
